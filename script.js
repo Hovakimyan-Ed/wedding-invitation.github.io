@@ -16,7 +16,6 @@ const countdown = setInterval(() => {
   document.getElementById("seconds").textContent = seconds;
 }, 1000);
 
-
 (() => {
   function onImagesLoaded(container) {
     const imgs = Array.from(container.querySelectorAll('img'));
@@ -33,129 +32,126 @@ const countdown = setInterval(() => {
   }
 
   function initInfiniteCarousel(root) {
-    const viewport = root.querySelector('.inf-carousel__viewport');
     const track = root.querySelector('.inf-carousel__track');
-    if (!viewport || !track) return;
+    if (!track) return;
 
-    // duplicate once to enable seamless loop
+    // duplicate once for seamless loop
     const originals = Array.from(track.children);
-    const fragment = document.createDocumentFragment();
-    originals.forEach(n => fragment.appendChild(n.cloneNode(true)));
-    track.appendChild(fragment);
+    const frag = document.createDocumentFragment();
+    originals.forEach(n => frag.appendChild(n.cloneNode(true)));
+    track.appendChild(frag);
 
-    let baseWidth = null;            // width of one full set
+    let baseWidth = null;             // width of a single set
     let rafId = null;
-    let lastTs = 0;
-    let paused = false;
-    let dragging = false;
-    let dragStartX = 0;
-    let dragStartScroll = 0;
-    let resumeTimer = null;
+    let last = 0;
+    let isPointerDown = false;
+    let cooldownUntil = 0;            // timestamp (ms) to resume autoplay after user lets go
+    let startX = 0;
+    let startScroll = 0;
 
-    const speed = parseFloat(root.dataset.speed || '0.5'); // px/ms
+    // Interpret data-speed as pixels per second (much clearer)
+    const pxPerSec = parseFloat(root.dataset.speed || '60'); // default ~60px/s
 
-    const pause = () => { paused = true; };
-    const resumeSoon = (delay = 1200) => {
-      clearTimeout(resumeTimer);
-      resumeTimer = setTimeout(() => { paused = false; }, delay);
-    };
-
-    function loop(ts) {
-      rafId = requestAnimationFrame(loop);
-      if (paused || dragging || baseWidth == null) { lastTs = ts; return; }
-      if (!lastTs) { lastTs = ts; return; }
-      const dt = ts - lastTs;
-      lastTs = ts;
-
-      // advance
-      track.scrollLeft += speed * dt;
-
-      // seamless wrap
-      if (track.scrollLeft >= baseWidth) {
-        track.scrollLeft -= baseWidth;
-      }
+    // Keep scroll inside [0, baseWidth)
+    function wrapScroll() {
+      if (baseWidth == null) return;
+      if (track.scrollLeft >= baseWidth) track.scrollLeft -= baseWidth;
+      else if (track.scrollLeft < 0) track.scrollLeft += baseWidth;
     }
 
     function measure() {
-      // After duplication, baseWidth is exactly half of scrollWidth
+      // After cloning, the total is 2x — half is one set
       baseWidth = track.scrollWidth / 2;
     }
 
-    // user interactions
-    function onWheel() { pause(); resumeSoon(); }
-    function onScroll() {
-      // when user flings, keep wrap logic
-      if (baseWidth != null && track.scrollLeft >= baseWidth) {
-        track.scrollLeft -= baseWidth;
-      } else if (baseWidth != null && track.scrollLeft < 0) {
-        track.scrollLeft += baseWidth;
-      }
+    function loop(ts) {
+      rafId = requestAnimationFrame(loop);
+      if (!last) { last = ts; return; }
+      const dtMs = ts - last;
+      last = ts;
+
+      // Pause autoplay while interacting or during cooldown
+      if (isPointerDown || ts < cooldownUntil || baseWidth == null) return;
+
+      const delta = (pxPerSec * dtMs) / 1000; // px
+      track.scrollLeft += delta;
+      wrapScroll();
     }
 
-    const startDrag = (clientX) => {
-      dragging = true;
+    // Unified pointer events (works for touch + mouse)
+    const onPointerDown = (e) => {
+      isPointerDown = true;
       root.classList.add('is-dragging');
-      pause();
-      dragStartX = clientX;
-      dragStartScroll = track.scrollLeft;
+      startX = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
+      startScroll = track.scrollLeft;
+      // immediate pause; autoplay resumes after cooldown
+      cooldownUntil = performance.now() + 1200;
     };
-    const moveDrag = (clientX) => {
-      if (!dragging) return;
-      const dx = clientX - dragStartX;
-      track.scrollLeft = dragStartScroll - dx;
 
-      // keep it seamless during drag
-      if (track.scrollLeft >= baseWidth) {
-        track.scrollLeft -= baseWidth;
-        dragStartScroll -= baseWidth;
-      } else if (track.scrollLeft < 0) {
-        track.scrollLeft += baseWidth;
-        dragStartScroll += baseWidth;
-      }
+    const onPointerMove = (e) => {
+      if (!isPointerDown) return;
+      const clientX = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
+      const dx = clientX - startX;
+      track.scrollLeft = startScroll - dx;
+      wrapScroll();
+      // prevent browser from trying to do momentum scroll + page swipe on mobile
+      if (e.cancelable) e.preventDefault();
     };
-    const endDrag = () => {
-      if (!dragging) return;
-      dragging = false;
+
+    const onPointerUp = () => {
+      if (!isPointerDown) return;
+      isPointerDown = false;
       root.classList.remove('is-dragging');
-      resumeSoon(800);
+      // give a short cooldown so it doesn't yank right after you let go
+      cooldownUntil = performance.now() + 1200;
     };
 
-    // Mouse
-    track.addEventListener('mousedown', (e) => startDrag(e.clientX));
-    window.addEventListener('mousemove', (e) => moveDrag(e.clientX));
-    window.addEventListener('mouseup', endDrag);
+    // Pointer events (preferred)
+    track.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointermove', onPointerMove, { passive: false });
+    window.addEventListener('pointerup', onPointerUp);
 
-    // Touch
-    track.addEventListener('touchstart', (e) => {
-      const t = e.touches[0];
-      startDrag(t.clientX);
+    // Fallback for older Safari iOS (touch events)
+    track.addEventListener('touchstart', (e) => onPointerDown(e), { passive: true });
+    track.addEventListener('touchmove', (e) => onPointerMove(e), { passive: false });
+    window.addEventListener('touchend', onPointerUp);
+
+    // Mouse fallback
+    track.addEventListener('mousedown', (e) => onPointerDown(e));
+    window.addEventListener('mousemove', (e) => onPointerMove(e));
+    window.addEventListener('mouseup', onPointerUp);
+
+    // Wheel pauses autoplay briefly (nice UX)
+    track.addEventListener('wheel', () => {
+      cooldownUntil = performance.now() + 1200;
     }, { passive: true });
-    track.addEventListener('touchmove', (e) => {
-      const t = e.touches[0];
-      moveDrag(t.clientX);
-      e.preventDefault();
-    }, { passive: false });
-    window.addEventListener('touchend', endDrag);
 
-    // Hover pause (optional but nice)
-    root.addEventListener('mouseenter', pause);
-    root.addEventListener('mouseleave', () => resumeSoon(200));
+    // Keep looping range even when user flings
+    track.addEventListener('scroll', wrapScroll, { passive: true });
 
-    track.addEventListener('wheel', onWheel, { passive: true });
-    track.addEventListener('scroll', onScroll, { passive: true });
+    // Pause when tab hidden (battery-friendly)
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      } else if (!rafId) {
+        last = 0;
+        rafId = requestAnimationFrame(loop);
+      }
+    });
 
-    // Kickoff after images are ready
+    // Start after images are ready
     onImagesLoaded(track).then(() => {
       measure();
+      last = 0;
       cancelAnimationFrame(rafId);
       rafId = requestAnimationFrame(loop);
     });
 
-    // In case layout changes (e.g., responsive), re-measure
+    // Recompute if layout changes
     const ro = new ResizeObserver(() => { baseWidth = track.scrollWidth / 2; });
     ro.observe(track);
   }
 
-  // Auto-init all instances on the page
   document.querySelectorAll('.inf-carousel').forEach(initInfiniteCarousel);
 })();
