@@ -23,7 +23,7 @@ img {
 
 /* Names and text */
 .names {
-  font-size: 50px;
+  font-size: 45px;
   text-align: center;
   font-weight: bold;
   margin-top: 20px;
@@ -80,6 +80,8 @@ img {
 }
 
 /* Gallery */
+.inf-carousel__track::-webkit-scrollbar { display: none; }
+
 .inf-carousel {
   --gap: 10px;
   --radius: 14px;
@@ -93,15 +95,17 @@ img {
 }
 
 .inf-carousel__track {
-  display: flex;
+   display: flex;
   align-items: center;
   gap: var(--gap);
   overflow-x: scroll;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: auto; /* JS handles motion */
-  -ms-overflow-style: none;  /* hide scrollbar (IE/Edge) */
-  scrollbar-width: none;     /* hide scrollbar (Firefox) */
+  /* remove the mandatory snap; it causes the “jump back” feeling */
+  scroll-snap-type: none;
+  scroll-behavior: auto; /* JS controls motion */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
+
 .inf-carousel__track::-webkit-scrollbar { display: none; }
 
 .inf-carousel__track img {
@@ -228,72 +232,70 @@ img {
   position: relative;
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 60px 0;
+  align-items: flex-start;
+  margin: 60px auto;
+  width: 100%;
+  max-width: 600px;     /* optional max width */
+  aspect-ratio: 4 / 3;  /* gives the section height — prevents overlap */
 }
 
 .img-stack img {
   position: absolute;
-  width: 40%;
-  max-width: 300px;
-  min-width: 150px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
-  transition: none;
+  width: 45%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
-/* Top image */
+/* top image */
 .img-top {
+  top: 0;
+  left: 0;
   z-index: 2;
-  transform: translate(-25%, -25%);
 }
 
-/* Bottom image */
+/* bottom image */
 .img-bottom {
+  top: 50%;
+  left: 50%;
   z-index: 1;
-  transform: translate(25%, 25%);
+  transform: translate(-10%, -10%);
 }
 
-/* Tablet screens */
+/* Tablet adjustments */
 @media (max-width: 768px) {
-  .img-stack img {
-    width: 50%;
+  .img-stack {
+    aspect-ratio: 3 / 4;
   }
-  .img-top {
-    transform: translate(-20%, -20%);
-  }
-  .img-bottom {
-    transform: translate(20%, 20%);
-  }
-}
 
-/* Mobile screens */
-@media (max-width: 480px) {
   .img-stack img {
-    width: 50%;
+    width: 60%;
   }
-  .img-top {
+
+  .img-bottom {
+    top: 55%;
+    left: 55%;
     transform: translate(-15%, -15%);
   }
-  .img-bottom {
-    transform: translate(15%, 15%);
+}
+
+/* Phone adjustments */
+@media (max-width: 480px) {
+  .img-stack {
+    aspect-ratio: 3 / 4;
   }
-}
 
+  .img-stack img {
+    width: 70%;
+  }
 
-/* Top image */
-.img-top {
-  z-index: 1;
-  transform: translate(-120px, -150px);
-  width: 20%;
-}
-
-/* Bottom image */
-.img-bottom {
-  z-index: 2;
-  transform: translate(120px, 150px);
-  width: 20%;
+  .img-bottom {
+    top: 58%;
+    left: 58%;
+    transform: translate(-20%, -20%);
+  }
 }
 
 .help {
@@ -301,7 +303,7 @@ img {
 }
 
 .help_img {
-  width: 50%;
+  width: 80%;
 }
 
 .help_img2 {
@@ -335,5 +337,5 @@ button {
 }
 
 .everything {
-  padding: 20px;
+  padding: 30px;
 }
