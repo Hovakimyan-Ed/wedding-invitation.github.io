@@ -233,15 +233,15 @@ img {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  margin: 60px auto;
+  margin: 40px auto 115px auto;
   width: 100%;
   max-width: 600px;     /* optional max width */
-  aspect-ratio: 4 / 3;  /* gives the section height — prevents overlap */
+  aspect-ratio: 4.5 / 5;  /* gives the section height — prevents overlap */
 }
 
 .img-stack img {
   position: absolute;
-  width: 45%;
+  width: 50%;
   height: auto;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
@@ -253,25 +253,24 @@ img {
 .img-top {
   top: 0;
   left: 0;
-  z-index: 2;
+  z-index: 1;
 }
 
 /* bottom image */
 .img-bottom {
   top: 50%;
-  left: 50%;
-  z-index: 1;
-  transform: translate(-10%, -10%);
+  left: 40%;
+  z-index: 2;
 }
 
 /* Tablet adjustments */
 @media (max-width: 768px) {
   .img-stack {
-    aspect-ratio: 3 / 4;
+    aspect-ratio: 4.5 / 5;
   }
 
   .img-stack img {
-    width: 60%;
+    width: 50%;
   }
 
   .img-bottom {
@@ -284,11 +283,11 @@ img {
 /* Phone adjustments */
 @media (max-width: 480px) {
   .img-stack {
-    aspect-ratio: 3 / 4;
+    aspect-ratio: 4.5 / 5;
   }
 
   .img-stack img {
-    width: 70%;
+    width: 50%;
   }
 
   .img-bottom {
