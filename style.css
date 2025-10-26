@@ -230,13 +230,10 @@ img {
 
 .img-stack {
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
   margin: 40px auto 115px auto;
   width: 100%;
-  max-width: 600px;     /* optional max width */
-  aspect-ratio: 4.5 / 5;  /* gives the section height — prevents overlap */
+  max-width: 600px;
+  aspect-ratio: 4.5 / 5;
 }
 
 .img-stack img {
@@ -252,14 +249,14 @@ img {
 /* top image */
 .img-top {
   top: 0;
-  left: 0;
-  z-index: 1;
+  left: 5%;
+  z-index: 0;
 }
 
 /* bottom image */
 .img-bottom {
   top: 50%;
-  left: 40%;
+  left: 45%;
   z-index: 2;
 }
 
@@ -277,6 +274,7 @@ img {
     top: 55%;
     left: 55%;
     transform: translate(-15%, -15%);
+    z-index: 2;
   }
 }
 
@@ -294,6 +292,7 @@ img {
     top: 58%;
     left: 58%;
     transform: translate(-20%, -20%);
+    z-index: 2;
   }
 }
 
