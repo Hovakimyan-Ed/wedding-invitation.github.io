@@ -139,7 +139,7 @@ img {
   align-items: center;
   justify-content: flex-start;
   gap: 15px;
-  width: 28.3%;
+  width: 390px;
   text-align: left;
   margin: 40px 0;
   font-size: 25px;
@@ -169,7 +169,7 @@ img {
   text-align: center;
   font-family: 'Georgia', serif;
   margin: 40px auto;
-  width: 28%;
+  width: 385px;
 }
 
 .calendar h2 {
@@ -190,7 +190,7 @@ img {
 
 .calendar td {
   padding: 10px;
-  font-size: 30px;
+  font-size: 25px;
   color: #333;
 }
 
@@ -206,7 +206,6 @@ img {
   top: 58%;
   transform: translate(-50%, -40%);
   z-index: -1;
-  width: 58px;
 }
 
 .icon2 {
