@@ -35,24 +35,21 @@ const countdown = setInterval(() => {
     const track = root.querySelector('.inf-carousel__track');
     if (!track) return;
 
-    // duplicate once for seamless loop
     const originals = Array.from(track.children);
     const frag = document.createDocumentFragment();
     originals.forEach(n => frag.appendChild(n.cloneNode(true)));
     track.appendChild(frag);
 
-    let baseWidth = null;             // width of a single set
+    let baseWidth = null;
     let rafId = null;
     let last = 0;
     let isPointerDown = false;
-    let cooldownUntil = 0;            // timestamp (ms) to resume autoplay after user lets go
+    let cooldownUntil = 0;
     let startX = 0;
     let startScroll = 0;
 
-    // Interpret data-speed as pixels per second (much clearer)
-    const pxPerSec = parseFloat(root.dataset.speed || '60'); // default ~60px/s
+    const pxPerSec = parseFloat(root.dataset.speed || '60');
 
-    // Keep scroll inside [0, baseWidth)
     function wrapScroll() {
       if (baseWidth == null) return;
       if (track.scrollLeft >= baseWidth) track.scrollLeft -= baseWidth;
@@ -60,7 +57,6 @@ const countdown = setInterval(() => {
     }
 
     function measure() {
-      // After cloning, the total is 2x — half is one set
       baseWidth = track.scrollWidth / 2;
     }
 
@@ -69,22 +65,17 @@ const countdown = setInterval(() => {
       if (!last) { last = ts; return; }
       const dtMs = ts - last;
       last = ts;
-
-      // Pause autoplay while interacting or during cooldown
       if (isPointerDown || ts < cooldownUntil || baseWidth == null) return;
-
-      const delta = (pxPerSec * dtMs) / 1000; // px
+      const delta = (pxPerSec * dtMs) / 1000;
       track.scrollLeft += delta;
       wrapScroll();
     }
 
-    // Unified pointer events (works for touch + mouse)
     const onPointerDown = (e) => {
       isPointerDown = true;
       root.classList.add('is-dragging');
       startX = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
       startScroll = track.scrollLeft;
-      // immediate pause; autoplay resumes after cooldown
       cooldownUntil = performance.now() + 1200;
     };
 
@@ -94,7 +85,6 @@ const countdown = setInterval(() => {
       const dx = clientX - startX;
       track.scrollLeft = startScroll - dx;
       wrapScroll();
-      // prevent browser from trying to do momentum scroll + page swipe on mobile
       if (e.cancelable) e.preventDefault();
     };
 
@@ -102,34 +92,27 @@ const countdown = setInterval(() => {
       if (!isPointerDown) return;
       isPointerDown = false;
       root.classList.remove('is-dragging');
-      // give a short cooldown so it doesn't yank right after you let go
       cooldownUntil = performance.now() + 1200;
     };
 
-    // Pointer events (preferred)
     track.addEventListener('pointerdown', onPointerDown);
     window.addEventListener('pointermove', onPointerMove, { passive: false });
     window.addEventListener('pointerup', onPointerUp);
 
-    // Fallback for older Safari iOS (touch events)
     track.addEventListener('touchstart', (e) => onPointerDown(e), { passive: true });
     track.addEventListener('touchmove', (e) => onPointerMove(e), { passive: false });
     window.addEventListener('touchend', onPointerUp);
 
-    // Mouse fallback
     track.addEventListener('mousedown', (e) => onPointerDown(e));
     window.addEventListener('mousemove', (e) => onPointerMove(e));
     window.addEventListener('mouseup', onPointerUp);
 
-    // Wheel pauses autoplay briefly (nice UX)
     track.addEventListener('wheel', () => {
       cooldownUntil = performance.now() + 1200;
     }, { passive: true });
 
-    // Keep looping range even when user flings
     track.addEventListener('scroll', wrapScroll, { passive: true });
 
-    // Pause when tab hidden (battery-friendly)
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
         cancelAnimationFrame(rafId);
@@ -140,7 +123,6 @@ const countdown = setInterval(() => {
       }
     });
 
-    // Start after images are ready
     onImagesLoaded(track).then(() => {
       measure();
       last = 0;
@@ -148,7 +130,6 @@ const countdown = setInterval(() => {
       rafId = requestAnimationFrame(loop);
     });
 
-    // Recompute if layout changes
     const ro = new ResizeObserver(() => { baseWidth = track.scrollWidth / 2; });
     ro.observe(track);
   }
