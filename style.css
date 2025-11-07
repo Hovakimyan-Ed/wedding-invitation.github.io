@@ -7,7 +7,10 @@
 body {
   font-family: 'Georgia', serif;
   color: #333;
-  background-color: red;
+}
+
+.rest {
+  text-align: center;
 }
 
 img {
@@ -22,7 +25,6 @@ img {
   width: 50%;
 }
 
-/* Names and text */
 .names {
   font-size: 40px;
   text-align: center;
@@ -56,11 +58,6 @@ img {
   font-size: 20px;
 }
 
-.rest {
-  margin-top: 30px;
-  text-align: center;
-}
-
 /* Countdown */
 .countdown {
   display: flex;
@@ -80,15 +77,11 @@ img {
   display: block;
 }
 
-/* Gallery */
 .inf-carousel__track::-webkit-scrollbar { display: none; }
 
 .inf-carousel {
   --gap: 10px;
-  --radius: 14px;
-  --height: 260px; /* adjust to your vibe */
-  position: relative;
-  padding: 0 10px;
+  --height: 260px;
 }
 
 .inf-carousel__viewport {
@@ -127,19 +120,12 @@ img {
 .inf-carousel .inf-carousel__track { cursor: grab; }
 
 /* Schedule */
-.schedule {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* keeps the entire block centered */
-}
 
 .event {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
   gap: 15px;
   width: 377px;
-  text-align: left;
   margin: 40px 0;
   font-size: 23px;
 }
@@ -173,7 +159,6 @@ img {
 
 .calendar h2 {
   font-size: 30px;
-  margin-bottom: 10px;
   font-style: italic;
 }
 
@@ -335,18 +320,6 @@ button {
   padding: 30px;
 }
 
-/* === SAMSUNG + ԺԱՄԱՆԱԿԱՑՈՒՅՑ FIXES === */
-
-/* Calendar overflow fix */
-.calendar {
-  width: 100%;
-  max-width: 385px;
-  margin-inline: auto;
-}
-.gic3 {
-  width: min(362px, 100%);
-  margin: 20px auto;
-}
 .calendar table {
   width: 100%;
   border-collapse: collapse;
@@ -356,12 +329,7 @@ button {
 .calendar th {
   padding: 10px;
 }
-
-.schedule {
-  width: 100%;
-}
 .event {
-  width: min(377px, 100%);
   margin-inline: auto;
   padding-inline: 8px;
 }
