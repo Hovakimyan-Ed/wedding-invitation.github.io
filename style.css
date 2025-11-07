@@ -137,10 +137,10 @@ img {
   align-items: center;
   justify-content: flex-start;
   gap: 15px;
-  width: 390px;
+  width: 392px;
   text-align: left;
   margin: 40px 0;
-  font-size: 25px;
+  font-size: 24px;
 }
 
 .event1 {
@@ -355,21 +355,16 @@ button {
 .calendar th {
   padding: 10px;
 }
-.img_heart {
-  height: auto;
-}
 
-/* Ժամանակացույց width/padding fix */
 .schedule {
   width: 100%;
 }
 .event {
-  width: min(406px, 100%);
+  width: min(392px, 100%);
   margin-inline: auto;
   padding-inline: 8px;
 }
 
-/* Safety */
 html, body {
   overflow-x: hidden;
 }
