@@ -125,8 +125,6 @@ img {
 }
 .inf-carousel .inf-carousel__track { cursor: grab; }
 
-
-
 /* Schedule */
 .schedule {
   display: flex;
@@ -334,4 +332,44 @@ button {
 
 .everything {
   padding: 30px;
+}
+
+/* === SAMSUNG + ԺԱՄԱՆԱԿԱՑՈՒՅՑ FIXES === */
+
+/* Calendar overflow fix */
+.calendar {
+  width: 100%;
+  max-width: 385px;
+  margin-inline: auto;
+}
+.gic3 {
+  width: min(362px, 100%);
+  margin: 20px auto;
+}
+.calendar table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.calendar td,
+.calendar th {
+  padding: 10px;
+}
+.img_heart {
+  height: auto;
+}
+
+/* Ժամանակացույց width/padding fix */
+.schedule {
+  width: 100%;
+}
+.event {
+  width: min(406px, 100%);
+  margin-inline: auto;
+  padding-inline: 8px;
+}
+
+/* Safety */
+html, body {
+  overflow-x: hidden;
 }
