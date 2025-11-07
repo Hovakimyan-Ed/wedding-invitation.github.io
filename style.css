@@ -137,10 +137,10 @@ img {
   align-items: center;
   justify-content: flex-start;
   gap: 15px;
-  width: 392px;
+  width: 377px;
   text-align: left;
   margin: 40px 0;
-  font-size: 24px;
+  font-size: 23px;
 }
 
 .event1 {
@@ -360,7 +360,7 @@ button {
   width: 100%;
 }
 .event {
-  width: min(392px, 100%);
+  width: min(377px, 100%);
   margin-inline: auto;
   padding-inline: 8px;
 }
