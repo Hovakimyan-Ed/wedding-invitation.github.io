@@ -1,5 +1,5 @@
 // Countdown
-const weddingDate = new Date("2025-12-18T11:30:00").getTime();
+const weddingDate = new Date("2025-12-18T10:30:00").getTime();
 
 const countdown = setInterval(() => {
   const now = new Date().getTime();
